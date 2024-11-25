@@ -39,8 +39,14 @@ export default class ComputeStack extends cdk.Stack {
     taskDefinition.addToExecutionRolePolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
+        actions: ["ecr:GetAuthorizationToken"],
+        resources: ["*"]
+      })
+    );
+    taskDefinition.addToExecutionRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
         actions: [
-          "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage"
