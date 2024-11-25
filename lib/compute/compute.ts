@@ -97,7 +97,11 @@ export default class ComputeStack extends cdk.Stack {
       scaleOutCooldown: cdk.Duration.seconds(60),
     });
 
-    fargateService.service.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow HTTP access from the internet');
+    fargateService.service.connections.allowFrom(
+      fargateService.loadBalancer,
+      ec2.Port.tcp(80),
+      'Allow only ALB access'
+    );
 
     fargateService.taskDefinition.addToExecutionRolePolicy(
       new iam.PolicyStatement({
