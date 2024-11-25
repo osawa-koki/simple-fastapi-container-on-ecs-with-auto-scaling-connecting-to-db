@@ -8,10 +8,25 @@
 
 ![成果物](./fruit.gif)  
 
+## 技術スタック
+
+- CDK
+  - CloudFormation
+  - TypeScript
+- ALB
+- ECS
+  - Fargate
+- Aurora
+  - MySQL
+- Secrets Manager
+
 ## 実行方法
 
+`.env.example`をコピーして`.env`を作成します。  
+中身を適切に設定してください。  
+
 DevContainerに入り、以下のコマンドを実行します。  
-※ `~/.aws/credentials`にAWSの認証情報があることを前提とします。  
+※ `~/.aws/credentials`にAWSの認証情報があることを前提としています。  
 
 ```bash
 cdk synth
