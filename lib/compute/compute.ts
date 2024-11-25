@@ -39,18 +39,24 @@ export default class ComputeStack extends cdk.Stack {
     taskDefinition.addToExecutionRolePolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
+        actions: ["ecr:GetAuthorizationToken"],
+        resources: ["*"]
+      })
+    );
+    taskDefinition.addToExecutionRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
         actions: [
-          "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage"
         ],
-        resources: ["*"]
+        resources: [`arn:aws:ecr:${this.region}:${this.account}:repository/${process.env.ECR_REPOSITORY_NAME!}`]
       })
     );
 
     const container = taskDefinition.addContainer('WebContainer', {
-      image: ecs.ContainerImage.fromRegistry(process.env.ECR_REPOSITORY_URI!),
+      image: ecs.ContainerImage.fromRegistry(`${this.account}.dkr.ecr.${this.region}.amazonaws.com/${process.env.ECR_REPOSITORY_NAME!}`),
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'FargateWebApp' }),
       containerName: 'FastapiEcsContainer',
       secrets: {
@@ -70,7 +76,7 @@ export default class ComputeStack extends cdk.Stack {
       cluster,
       taskDefinition,
       publicLoadBalancer: true,
-      desiredCount: 1,
+      desiredCount: 2,
       assignPublicIp: false,
       listenerPort: 80,
       capacityProviderStrategies: [
@@ -87,7 +93,7 @@ export default class ComputeStack extends cdk.Stack {
 
     // Auto Scalingの設定
     const scaling = fargateService.service.autoScaleTaskCount({
-      maxCapacity: 3,
+      maxCapacity: 4,
       minCapacity: 2,
     });
 
@@ -97,7 +103,11 @@ export default class ComputeStack extends cdk.Stack {
       scaleOutCooldown: cdk.Duration.seconds(60),
     });
 
-    fargateService.service.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow HTTP access from the internet');
+    fargateService.service.connections.allowFrom(
+      fargateService.loadBalancer,
+      ec2.Port.tcp(80),
+      'Allow only ALB access'
+    );
 
     fargateService.taskDefinition.addToExecutionRolePolicy(
       new iam.PolicyStatement({
@@ -106,7 +116,10 @@ export default class ComputeStack extends cdk.Stack {
           'logs:CreateLogStream',
           'logs:PutLogEvents'
         ],
-        resources: ["*"]
+        resources: [
+          `arn:aws:logs:${this.region}:${this.account}:log-group:/aws/ecs/FargateWebApp:*`,
+          `arn:aws:logs:${this.region}:${this.account}:log-group:/aws/ecs/FargateWebApp:log-stream:*`
+        ]
       })
     );
 
