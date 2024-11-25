@@ -2,6 +2,10 @@
 
 🧟‍♂️🧟‍♂️🧟‍♂️ FastAPIのコンテナ(ECR)をECS(Fargate起動タイプ)にAuto Scalingでスケーリング性を持つようにデプロイしてみる！(DB接続あり！)  
 
+[![ci](https://github.com/osawa-koki/simple-fastapi-container-on-ecs-with-auto-scaling-connecting-to-db/actions/workflows/ci.yml/badge.svg)](https://github.com/osawa-koki/simple-fastapi-container-on-ecs-with-auto-scaling-connecting-to-db/actions/workflows/ci.yml)
+[![cd](https://github.com/osawa-koki/simple-fastapi-container-on-ecs-with-auto-scaling-connecting-to-db/actions/workflows/cd.yml/badge.svg)](https://github.com/osawa-koki/simple-fastapi-container-on-ecs-with-auto-scaling-connecting-to-db/actions/workflows/cd.yml)
+[![Dependabot Updates](https://github.com/osawa-koki/simple-fastapi-container-on-ecs-with-auto-scaling-connecting-to-db/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/osawa-koki/simple-fastapi-container-on-ecs-with-auto-scaling-connecting-to-db/actions/workflows/dependabot/dependabot-updates)
+
 ![成果物](./fruit.gif)  
 
 ## 実行方法
