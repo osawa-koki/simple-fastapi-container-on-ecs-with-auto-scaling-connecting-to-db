@@ -37,8 +37,16 @@ export default class DatabaseStack extends cdk.Stack {
       },
     });
 
-    // セキュリティグループの設定を追加
-    aurora.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(3306), 'Allow Aurora to be accessed from the VPC');
+    const privateWithEgressSubnets = vpc.selectSubnets({
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS
+    });
+    privateWithEgressSubnets.subnets.forEach((subnet) => {
+      aurora.connections.allowFrom(
+        ec2.Peer.ipv4(subnet.ipv4CidrBlock),
+        ec2.Port.tcp(3306),
+        'Allow Aurora to be accessed from private-with-egress subnet only'
+      );
+    });
 
     this.aurora = aurora;
   }
