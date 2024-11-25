@@ -2,6 +2,8 @@
 
 🧟‍♂️🧟‍♂️🧟‍♂️ FastAPIのコンテナ(ECR)をECS(Fargate起動タイプ)にAuto Scalingでスケーリング性を持つようにデプロイしてみる！(DB接続あり！)  
 
+![成果物](./fruit.gif)  
+
 ## 実行方法
 
 DevContainerに入り、以下のコマンドを実行します。  
