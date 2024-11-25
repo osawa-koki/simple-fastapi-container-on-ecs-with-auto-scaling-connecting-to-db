@@ -4,17 +4,19 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 
 interface ComputeStackProps extends cdk.StackProps {
   stackName: string;
   vpc: ec2.Vpc;
+  databaseSecret: ISecret;
 }
 
 export default class ComputeStack extends cdk.Stack {
   public readonly fargateService: ecsPatterns.ApplicationLoadBalancedFargateService;
 
   constructor(scope: Construct, id: string, props: ComputeStackProps) {
-    const { stackName, vpc } = props;
+    const { stackName, vpc, databaseSecret } = props;
 
     super(scope, id, {
       ...props,
@@ -51,6 +53,12 @@ export default class ComputeStack extends cdk.Stack {
       image: ecs.ContainerImage.fromRegistry(process.env.ECR_REPOSITORY_URI!),
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'FargateWebApp' }),
       containerName: 'FastapiEcsContainer',
+      secrets: {
+        DB_HOST: ecs.Secret.fromSecretsManager(databaseSecret, 'host'),
+        DB_PORT: ecs.Secret.fromSecretsManager(databaseSecret, 'port'),
+        DB_USER: ecs.Secret.fromSecretsManager(databaseSecret, 'username'),
+        DB_PASSWORD: ecs.Secret.fromSecretsManager(databaseSecret, 'password'),
+      },
     });
 
     container.addPortMappings({

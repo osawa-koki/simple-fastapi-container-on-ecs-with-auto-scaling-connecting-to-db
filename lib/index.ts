@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv';
 import NetworkStack from './network/network';
 import ComputeStack from './compute/compute';
 import OutputStack from './output/output';
+import DatabaseStack from './database/database';
 import { BASE_STACK_NAME } from './const';
 
 dotenv.config();
@@ -21,9 +22,15 @@ export class FastapiEcsStack extends cdk.Stack {
       stackName: `${BASE_STACK_NAME}-NetworkStack`,
     });
 
+    const databaseStack = new DatabaseStack(this, 'DatabaseStack', {
+      stackName: `${BASE_STACK_NAME}-DatabaseStack`,
+      vpc: networkStack.vpc,
+    });
+
     const computeStack = new ComputeStack(this, 'ComputeStack', {
       stackName: `${BASE_STACK_NAME}-ComputeStack`,
       vpc: networkStack.vpc,
+      databaseSecret: databaseStack.aurora.secret!,
     });
 
     new OutputStack(this, 'OutputStack', {
