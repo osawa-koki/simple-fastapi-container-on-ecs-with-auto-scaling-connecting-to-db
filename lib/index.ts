@@ -26,16 +26,19 @@ export class FastapiEcsStack extends cdk.Stack {
       stackName: `${BASE_STACK_NAME}-DatabaseStack`,
       vpc: networkStack.vpc,
     });
+    databaseStack.addDependency(networkStack);
 
     const computeStack = new ComputeStack(this, 'ComputeStack', {
       stackName: `${BASE_STACK_NAME}-ComputeStack`,
       vpc: networkStack.vpc,
       databaseSecret: databaseStack.aurora.secret!,
     });
+    computeStack.addDependency(databaseStack);
 
-    new OutputStack(this, 'OutputStack', {
+    const outputStack = new OutputStack(this, 'OutputStack', {
       stackName: `${BASE_STACK_NAME}-OutputStack`,
       fargateService: computeStack.fargateService,
     });
+    outputStack.addDependency(computeStack);
   }
 }
